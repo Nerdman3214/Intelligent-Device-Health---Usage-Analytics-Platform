@@ -347,3 +347,7 @@ class FeatureExtractor:
     def get_feature_names() -> List[str]:
         """Get ordered list of feature names"""
         return FeatureExtractor.FEATURE_NAMES.copy()
+
+
+# Module-level export for convenience (used by train.py)
+FEATURE_NAMES = FeatureExtractor.FEATURE_NAMES

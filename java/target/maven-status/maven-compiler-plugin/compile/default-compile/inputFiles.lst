@@ -6,8 +6,10 @@
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/service/DeviceHealthService.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/controller/DeviceHealthController.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/exception/GlobalExceptionHandler.java
+/home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/controller/MetricsController.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/service/PythonAnalyticsService.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/model/TelemetryRecord.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/exception/ValidationException.java
+/home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/metrics/PerformanceMetrics.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/TelemetryApplication.java
 /home/steven/Intelligent Device Health & Usage Analytics Platform/java/src/main/java/com/apple/telemetry/exception/ErrorCode.java

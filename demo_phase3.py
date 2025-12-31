@@ -17,6 +17,7 @@ Author: Software Engineering Intern
 
 import sys
 import logging
+import random
 from pathlib import Path
 from datetime import datetime, timedelta
 import json
@@ -58,7 +59,8 @@ def main():
     # === STEP 1: Generate Training Data ===
     print_section("Step 1: Generate Synthetic Telemetry")
     
-    generator = TelemetryGenerator(seed=42)
+    # Set random seed for reproducibility
+    random.seed(42)
     
     # Generate diverse dataset
     print("Generating devices with different health profiles...")
@@ -78,14 +80,16 @@ def main():
     ]
     
     for device_id, profile, count in device_configs:
-        records = generator.generate_time_series(
+        records = TelemetryGenerator.generate_time_series(
             device_id=device_id,
             duration_days=7,
-            samples_per_day=count // 7,
-            quality=profile
+            samples_per_day=count // 7
         )
         all_records.extend(records)
-        print(f"  Generated {len(records)} samples for {device_id} ({profile})")
+        print(
+            f"  Generated {len(records)} samples for "
+            f"{device_id} ({profile})"
+        )
     
     print(f"\nTotal samples: {len(all_records)}")
     

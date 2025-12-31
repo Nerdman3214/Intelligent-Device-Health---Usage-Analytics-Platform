@@ -1,5 +1,6 @@
 package com.apple.telemetry.service;
 
+import com.apple.telemetry.metrics.PerformanceMetrics;
 import com.apple.telemetry.model.DeviceHealthRequest;
 import com.apple.telemetry.model.DeviceHealthResponse;
 import com.apple.telemetry.validation.RequestValidator;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  * - Invoke analytics
  * - Apply business rules
  * - Log decisions
+ * - Track metrics
  */
 @Service
 public class DeviceHealthService {
@@ -25,13 +27,16 @@ public class DeviceHealthService {
     
     private final RequestValidator validator;
     private final PythonAnalyticsService analyticsService;
+    private final PerformanceMetrics metrics;
     
     public DeviceHealthService(
         RequestValidator validator,
-        PythonAnalyticsService analyticsService
+        PythonAnalyticsService analyticsService,
+        PerformanceMetrics metrics
     ) {
         this.validator = validator;
         this.analyticsService = analyticsService;
+        this.metrics = metrics;
     }
     
     /**
@@ -40,7 +45,8 @@ public class DeviceHealthService {
      * Flow:
      * 1. Validate request (business rules)
      * 2. Invoke Python analytics
-     * 3. Return structured response
+     * 3. Track metrics
+     * 4. Return structured response
      * 
      * All exceptions are typed and logged.
      */
@@ -55,6 +61,13 @@ public class DeviceHealthService {
         
         // Invoke analytics
         DeviceHealthResponse response = analyticsService.analyzeDeviceHealth(request);
+        
+        // Track prediction metrics
+        metrics.recordPrediction(
+            response.getModelVersion() != null ? response.getModelVersion() : "unknown",
+            response.getIsConfident() ? 0.9 : 0.5,  // Map boolean to confidence
+            true  // Assume in distribution if no warnings
+        );
         
         // Log result
         logger.info(

@@ -1,5 +1,6 @@
 package com.apple.telemetry.controller;
 
+import com.apple.telemetry.metrics.PerformanceMetrics;
 import com.apple.telemetry.model.DeviceHealthRequest;
 import com.apple.telemetry.model.DeviceHealthResponse;
 import com.apple.telemetry.service.DeviceHealthService;
@@ -26,9 +27,11 @@ public class DeviceHealthController {
     private static final Logger logger = LoggerFactory.getLogger(DeviceHealthController.class);
     
     private final DeviceHealthService healthService;
+    private final PerformanceMetrics metrics;
     
-    public DeviceHealthController(DeviceHealthService healthService) {
+    public DeviceHealthController(DeviceHealthService healthService, PerformanceMetrics metrics) {
         this.healthService = healthService;
+        this.metrics = metrics;
     }
     
     /**
@@ -67,9 +70,16 @@ public class DeviceHealthController {
     ) {
         logger.info("Received health analysis request [deviceId={}]", request.getDeviceId());
         
-        DeviceHealthResponse response = healthService.analyzeDeviceHealth(request);
+        PerformanceMetrics.RequestContext context = metrics.startRequest("/api/device/health/analyze");
         
-        return ResponseEntity.ok(response);
+        try {
+            DeviceHealthResponse response = healthService.analyzeDeviceHealth(request);
+            metrics.recordSuccess(context);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Failure metrics recorded by GlobalExceptionHandler
+            throw e;
+        }
     }
     
     /**
