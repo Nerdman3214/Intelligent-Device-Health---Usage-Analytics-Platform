@@ -1,0 +1,28 @@
+# Python Standard Library Only (No External Dependencies for Phase 1-2)
+# This project intentionally uses only Python standard library to demonstrate
+# understanding of core algorithms without relying on heavy frameworks.
+
+# Python >= 3.10 required for:
+# - Union type hints (X | Y)
+# - Pattern matching (match/case) - if used later
+# - Improved error messages
+
+# === PHASE 3: Machine Learning Dependencies ===
+# Explainable ML models only (Logistic Regression, Random Forest, GBM)
+scikit-learn>=1.3.0
+numpy>=1.24.0
+joblib>=1.3.0
+
+# For model explainability
+shap>=0.43.0
+
+# For future phases:
+# pytest>=7.4.0          # Phase 1-2 testing
+# numpy>=1.24.0          # Phase 3: ML/advanced analytics
+# scikit-learn>=1.3.0    # Phase 3: ML models
+# pandas>=2.0.0          # Phase 3: Data manipulation (optional)
+# flask>=2.3.0           # Phase 4: REST API (alternative to Java)
+# fastapi>=0.100.0       # Phase 4: Modern REST API (alternative)
+
+# Current dependencies: NONE (standard library only)
+# This demonstrates core programming skills without framework dependency.

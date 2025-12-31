@@ -1,0 +1,10 @@
+# Models Directory
+
+Trained ML models are saved here.
+
+Models include:
+- Trained classifier (.pkl file)
+- Feature scaler
+- Training metadata (CV scores, feature names, etc.)
+
+Example: `gradient_boosting_20240115_120000.pkl`
