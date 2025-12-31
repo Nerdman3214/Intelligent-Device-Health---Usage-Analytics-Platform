@@ -190,9 +190,11 @@ class ModelTrainer:
         Returns:
             TrainingMetrics with cross-validation scores
         """
+        # Step 1: Record training start time for performance metrics
         start_time = datetime.now()
         
-        # Prepare training data
+        # Step 2: Convert feature dicts and label dicts to numpy arrays
+        # This prepares data for sklearn models
         X, y, class_dist = self._prepare_training_data(
             features_list,
             labels_list

@@ -98,33 +98,55 @@ class TransferLearningManager:
         Args:
             checkpoint_dir: Directory to store model checkpoints
         """
+        # Convert checkpoint directory path to Path object for cross-platform compatibility
         self.checkpoint_dir = Path(checkpoint_dir)
+        
+        # Create checkpoint directory if it doesn't exist
+        # parents=True: create parent directories if needed
+        # exist_ok=True: don't raise error if directory already exists
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         
-        # Metadata file tracks all checkpoints
+        # Metadata file tracks all checkpoints in a centralized JSON file
+        # This allows quick lookup of all available checkpoints without scanning directories
         self.metadata_file = self.checkpoint_dir / 'checkpoints_metadata.json'
+        
+        # Load existing checkpoint registry or create new one if first time
         self._load_or_create_metadata()
     
     def _load_or_create_metadata(self):
         """Load existing metadata or create new metadata file"""
+        # Check if metadata file already exists from previous sessions
         if self.metadata_file.exists():
+            # Open and read the JSON file containing all checkpoint metadata
             with open(self.metadata_file, 'r') as f:
+                # Parse JSON into Python dictionary
                 data = json.load(f)
+                
+                # Convert each dictionary entry back into ModelCheckpoint object
+                # k = checkpoint_id (string), v = checkpoint data (dict)
                 self.checkpoints = {
                     k: ModelCheckpoint.from_dict(v) 
                     for k, v in data.items()
                 }
         else:
+            # First time initialization - create empty checkpoint registry
             self.checkpoints = {}
+            
+            # Save the empty metadata file to disk
             self._save_metadata()
     
     def _save_metadata(self):
         """Save checkpoint metadata to disk"""
+        # Convert all ModelCheckpoint objects to dictionaries for JSON serialization
+        # k = checkpoint_id, v = ModelCheckpoint object
         data = {
             k: v.to_dict() 
             for k, v in self.checkpoints.items()
         }
+        
+        # Write to metadata file with indentation for human readability
         with open(self.metadata_file, 'w') as f:
+            # indent=2: pretty-print with 2-space indentation
             json.dump(data, f, indent=2)
     
     def save_checkpoint(
@@ -165,33 +187,42 @@ class TransferLearningManager:
                 }
             )
         """
-        # Generate checkpoint ID if not provided
+        # Step 1: Generate unique checkpoint ID if not provided by user
         if checkpoint_id is None:
+            # Create timestamp string: YYYYMMDD_HHMMSS (e.g., "20251231_143022")
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            # Combine model name with timestamp for unique ID
+            # Example: "xgboost_device_health_20251231_143022"
             checkpoint_id = f"{model_name}_{timestamp}"
         
-        # Create checkpoint directory
+        # Step 2: Create directory for this specific checkpoint
         checkpoint_path = self.checkpoint_dir / checkpoint_id
+        # Create directory and any missing parent directories
         checkpoint_path.mkdir(parents=True, exist_ok=True)
         
-        # Save model file
+        # Step 3: Save the actual model using joblib serialization
         model_file = checkpoint_path / 'model.joblib'
+        # joblib.dump: Efficiently serialize sklearn/xgboost models
+        # Handles numpy arrays better than pickle
         joblib.dump(model, model_file)
         
-        # Prepare metadata
+        # Step 4: Prepare and enhance metadata
         if metadata is None:
+            # Create empty metadata dict if none provided
             metadata = {}
         
-        metadata['model_name'] = model_name
-        metadata['saved_at'] = datetime.now().isoformat()
-        metadata['model_type'] = type(model).__name__
+        # Add standard fields to metadata
+        metadata['model_name'] = model_name  # Human-readable name
+        metadata['saved_at'] = datetime.now().isoformat()  # ISO timestamp
+        metadata['model_type'] = type(model).__name__  # e.g., "XGBClassifier"
         
-        # Save metadata JSON
+        # Step 5: Save metadata as separate JSON file
         metadata_file = checkpoint_path / 'metadata.json'
         with open(metadata_file, 'w') as f:
+            # Write metadata with pretty printing (indent=2)
             json.dump(metadata, f, indent=2)
         
-        # Create checkpoint object
+        # Step 6: Create checkpoint object for in-memory registry
         checkpoint = ModelCheckpoint(
             checkpoint_id=checkpoint_id,
             model_path=model_file,
@@ -199,14 +230,17 @@ class TransferLearningManager:
             created_at=metadata['saved_at']
         )
         
-        # Register checkpoint
+        # Step 7: Register checkpoint in central registry
         self.checkpoints[checkpoint_id] = checkpoint
+        # Save updated registry to disk (checkpoints_metadata.json)
         self._save_metadata()
         
+        # Step 8: Log checkpoint creation for debugging
         logger.info(f"Saved checkpoint: {checkpoint_id}")
         logger.info(f"  Model: {model_name}")
         logger.info(f"  Path: {model_file}")
         
+        # Return the checkpoint ID so caller can load it later
         return checkpoint_id
     
     def load_checkpoint(self, checkpoint_id: str) -> Any:
@@ -231,22 +265,33 @@ class TransferLearningManager:
             # Or fine-tune with new data
             model.fit(X_new, y_new)
         """
+        # Step 1: Validate that the requested checkpoint exists
         if checkpoint_id not in self.checkpoints:
+            # Raise descriptive error with list of available checkpoints
             raise ValueError(
                 f"Checkpoint '{checkpoint_id}' not found. "
                 f"Available: {list(self.checkpoints.keys())}"
             )
         
+        # Step 2: Get checkpoint metadata from registry
         checkpoint = self.checkpoints[checkpoint_id]
         
+        # Step 3: Verify the model file actually exists on disk
+        # (Catches cases where file was deleted but registry not updated)
         if not checkpoint.model_path.exists():
             raise FileNotFoundError(
                 f"Model file not found: {checkpoint.model_path}"
             )
         
+        # Step 4: Log loading operation
         logger.info(f"Loading checkpoint: {checkpoint_id}")
+        
+        # Step 5: Deserialize model from disk using joblib
+        # joblib.load: Reconstructs the exact model state
+        # Works with sklearn, xgboost, lightgbm models
         model = joblib.load(checkpoint.model_path)
         
+        # Return the loaded model ready for inference or fine-tuning
         return model
     
     def get_checkpoint_metadata(self, checkpoint_id: str) -> Dict[str, Any]:
