@@ -49,8 +49,7 @@ public class RequestValidator {
         int sampleCount = request.getTelemetry().size();
         if (sampleCount < MIN_TELEMETRY_SAMPLES) {
             throw new ValidationException(
-                String.format(
-                    "Insufficient telemetry data: %d samples provided, minimum %d required",
+                "Insufficient telemetry data: %d samples provided, minimum %d required".formatted(
                     sampleCount,
                     MIN_TELEMETRY_SAMPLES
                 ),
@@ -64,8 +63,7 @@ public class RequestValidator {
         
         if (sampleCount > MAX_TELEMETRY_SAMPLES) {
             throw new ValidationException(
-                String.format(
-                    "Too many telemetry samples: %d provided, maximum %d allowed",
+                "Too many telemetry samples: %d provided, maximum %d allowed".formatted(
                     sampleCount,
                     MAX_TELEMETRY_SAMPLES
                 ),
@@ -121,8 +119,7 @@ public class RequestValidator {
             
             if (timestamp.isAfter(maxFuture)) {
                 throw new ValidationException(
-                    String.format(
-                        "Telemetry timestamp is too far in the future at index %d",
+                    "Telemetry timestamp is too far in the future at index %d".formatted(
                         i
                     ),
                     ErrorCode.TELEMETRY_VALIDATION_FAILED,
@@ -136,8 +133,7 @@ public class RequestValidator {
             
             if (timestamp.isBefore(maxPast)) {
                 throw new ValidationException(
-                    String.format(
-                        "Telemetry timestamp is too far in the past at index %d",
+                    "Telemetry timestamp is too far in the past at index %d".formatted(
                         i
                     ),
                     ErrorCode.TELEMETRY_VALIDATION_FAILED,

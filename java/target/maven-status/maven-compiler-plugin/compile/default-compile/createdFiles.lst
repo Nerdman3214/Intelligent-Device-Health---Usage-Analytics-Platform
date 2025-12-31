@@ -1,0 +1,17 @@
+com/apple/telemetry/model/DeviceHealthResponse$FeatureContribution.class
+com/apple/telemetry/model/TelemetryRecord.class
+com/apple/telemetry/model/DeviceHealthRequest.class
+com/apple/telemetry/service/DeviceHealthService.class
+com/apple/telemetry/TelemetryApplication.class
+com/apple/telemetry/exception/AnalyticsException.class
+com/apple/telemetry/exception/GlobalExceptionHandler.class
+com/apple/telemetry/controller/DeviceHealthController.class
+com/apple/telemetry/exception/ValidationException.class
+com/apple/telemetry/exception/ApiError.class
+com/apple/telemetry/validation/RequestValidator.class
+com/apple/telemetry/service/PythonAnalyticsService.class
+com/apple/telemetry/exception/ErrorCode.class
+com/apple/telemetry/model/DeviceHealthResponse$FeatureContribution$FeatureContributionBuilder.class
+com/apple/telemetry/model/DeviceHealthResponse$DeviceHealthResponseBuilder.class
+com/apple/telemetry/model/DeviceHealthResponse.class
+com/apple/telemetry/exception/ApiError$ApiErrorBuilder.class
